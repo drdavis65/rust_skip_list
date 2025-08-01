@@ -2,19 +2,18 @@ use rand::Rng;
 use std::cmp::Ordering;
 use std::fmt::Display;
 
-
 pub trait Comparator<K> {
     fn compare(&self, a: &K, b: &K) -> Ordering;
 }
 
 #[derive(Clone)]
-pub struct Link<K, V>{
+pub struct Link<K, V> {
     pub width: usize,
     pub node: Option<Box<SkipNode<K, V>>>,
 }
 
 #[derive(Clone)]
-pub struct SkipNode<K, V>{
+pub struct SkipNode<K, V> {
     pub forward: Vec<Link<K, V>>,
     pub key: Option<K>,
     pub data: Option<V>,
@@ -35,7 +34,10 @@ impl<K, V> SkipList<K, V> {
     fn init_head(max_level: u16) -> Box<SkipNode<K, V>> {
         let mut forward = Vec::with_capacity(max_level as usize);
         for _ in 0..max_level {
-            forward.push(Link { width: 0, node: None });
+            forward.push(Link {
+                width: 0,
+                node: None,
+            });
         }
 
         Box::new(SkipNode {
@@ -46,15 +48,17 @@ impl<K, V> SkipList<K, V> {
     }
 }
 
-
-impl<K,V> SkipList<K, V> {
+impl<K, V> SkipList<K, V> {
     pub fn new(
         comparator: Box<dyn Comparator<K>>,
         key_destructor: Option<fn(K)>,
         p: f32,
         max_level: u16,
     ) -> Self {
-        assert!(p > 0.0 && p <= 1.0, "Probability p must be in > 0 and <= 1].");
+        assert!(
+            p > 0.0 && p <= 1.0,
+            "Probability p must be in > 0 and <= 1]."
+        );
 
         SkipList {
             max_level,
@@ -93,12 +97,7 @@ pub fn destroy<K, V>(
     }
 }
 
-
-
-pub fn node_at<K, V>(
-    skiplist: &SkipList<K, V>,
-    index: usize,
-) -> Option<&SkipNode<K, V>> {
+pub fn node_at<K, V>(skiplist: &SkipList<K, V>, index: usize) -> Option<&SkipNode<K, V>> {
     if index >= skiplist.width {
         return None;
     }
@@ -123,29 +122,15 @@ pub fn node_at<K, V>(
     None
 }
 
-
-pub fn key_at<K: Clone, V>(
-    skiplist: &SkipList<K, V>,
-    index: usize,
-) -> Option<K> {
-    node_at(skiplist, index)
-        .and_then(|node| node.key.as_ref().cloned())
+pub fn key_at<K: Clone, V>(skiplist: &SkipList<K, V>, index: usize) -> Option<K> {
+    node_at(skiplist, index).and_then(|node| node.key.as_ref().cloned())
 }
 
-
-pub fn data_at<K, V: Clone>(
-    skiplist: &SkipList<K, V>,
-    index: usize,
-) -> Option<V> {
-    node_at(skiplist, index)
-        .and_then(|node| node.data.as_ref().cloned())
+pub fn data_at<K, V: Clone>(skiplist: &SkipList<K, V>, index: usize) -> Option<V> {
+    node_at(skiplist, index).and_then(|node| node.data.as_ref().cloned())
 }
 
-
-pub fn search<'a, K, V>(
-    skiplist: &'a SkipList<K, V>,
-    key: &'a K,
-) -> Option<&'a V> {
+pub fn search<'a, K, V>(skiplist: &'a SkipList<K, V>, key: &'a K) -> Option<&'a V> {
     let mut node: &SkipNode<K, V> = &skiplist.head;
 
     for level in (0..skiplist.level).rev() {
@@ -153,10 +138,10 @@ pub fn search<'a, K, V>(
             let next_link = &node.forward[level as usize];
             match next_link.node.as_deref() {
                 Some(next_node) => {
-                    match skiplist.comparator.compare(
-                        next_node.key.as_ref().unwrap(),
-                        key,
-                    ) {
+                    match skiplist
+                        .comparator
+                        .compare(next_node.key.as_ref().unwrap(), key)
+                    {
                         Ordering::Less => node = next_node,
                         _ => break,
                     }
@@ -167,11 +152,7 @@ pub fn search<'a, K, V>(
     }
 
     if let Some(next) = node.forward[0].node.as_deref() {
-        if skiplist
-            .comparator
-            .compare(next.key.as_ref().unwrap(), key)
-            == Ordering::Equal
-        {
+        if skiplist.comparator.compare(next.key.as_ref().unwrap(), key) == Ordering::Equal {
             return next.data.as_ref();
         }
     }
@@ -179,11 +160,7 @@ pub fn search<'a, K, V>(
     None
 }
 
-pub fn insert<K: Clone, V: Clone>(
-    skiplist: &mut SkipList<K, V>,
-    key: K,
-    value: V,
-) -> Option<V> {
+pub fn insert<K: Clone, V: Clone>(skiplist: &mut SkipList<K, V>, key: K, value: V) -> Option<V> {
     let mut update: Vec<*mut SkipNode<K, V>> =
         vec![std::ptr::null_mut(); skiplist.max_level as usize];
     let mut update_width = vec![0; skiplist.max_level as usize];
@@ -194,7 +171,11 @@ pub fn insert<K: Clone, V: Clone>(
     unsafe {
         for i in (0..skiplist.level).rev() {
             while let Some(ref mut next) = (*node).forward[i as usize].node {
-                if skiplist.comparator.compare(next.key.as_ref().unwrap(), &key) == Ordering::Less {
+                if skiplist
+                    .comparator
+                    .compare(next.key.as_ref().unwrap(), &key)
+                    == Ordering::Less
+                {
                     w += (*node).forward[i as usize].width;
                     node = next.as_mut() as *mut _;
                 } else {
@@ -207,7 +188,11 @@ pub fn insert<K: Clone, V: Clone>(
 
         // Check for duplicate key
         if let Some(next) = (*node).forward[0].node.as_mut() {
-            if skiplist.comparator.compare(next.as_ref().key.as_ref().unwrap(), &key) == Ordering::Equal {
+            if skiplist
+                .comparator
+                .compare(next.as_ref().key.as_ref().unwrap(), &key)
+                == Ordering::Equal
+            {
                 let old_val = next.data.replace(value);
                 return old_val;
             }
@@ -226,7 +211,10 @@ pub fn insert<K: Clone, V: Clone>(
 
         let mut forward = Vec::with_capacity(level as usize);
         for _ in 0..level {
-            forward.push(Link { width: 0, node: None });
+            forward.push(Link {
+                width: 0,
+                node: None,
+            });
         }
 
         let mut new_node = Box::new(SkipNode {
@@ -238,14 +226,14 @@ pub fn insert<K: Clone, V: Clone>(
         for i in 0..level {
             let prev = update[i as usize];
             let width = if (*prev).forward[i as usize].node.is_some() {
-                (*prev).forward[i as usize].width
+                (*prev).forward[i as usize]
+                    .width
                     .saturating_sub(update_width[0].saturating_sub(update_width[i as usize]))
             } else {
                 0
             };
 
-            new_node.forward[i as usize].node =
-                (*prev).forward[i as usize].node.take();
+            new_node.forward[i as usize].node = (*prev).forward[i as usize].node.take();
             new_node.forward[i as usize].width = width;
 
             (*prev).forward[i as usize].node = Some(new_node.clone());
@@ -258,15 +246,80 @@ pub fn insert<K: Clone, V: Clone>(
     None
 }
 
+pub fn remove<K: Clone, V>(skiplist: &mut SkipList<K, V>, key: &K) -> Option<V> {
+    // Array holding pointers that need their links updated
+    let mut update: Vec<*mut SkipNode<K, V>> = vec![std::ptr::null_mut(); skiplist.level as usize];
 
+    let mut x: *mut SkipNode<K, V> = &mut *skiplist.head;
 
-pub fn remove<K: Clone, V>(
-    skiplist: &mut SkipList<K, V>,
-    key: &K,
-) -> Option<V> {
-    todo!("implement remove")
+    unsafe {
+        // Find path and fill update array
+        for i in (0..skiplist.level).rev() {
+            while let Some(ref mut next) = (*x).forward[i as usize].node {
+                if skiplist.comparator.compare(next.key.as_ref().unwrap(), key) == Ordering::Less {
+                    x = next.as_mut();
+                } else {
+                    break;
+                }
+            }
+            update[i as usize] = x;
+        }
+
+        // Advance to possible node
+        x = match (*x).forward[0].node.as_mut() {
+            Some(node) => node.as_mut(),
+            None => return None,
+        };
+
+        // Key not found
+        if skiplist.comparator.compare((*x).key.as_ref().unwrap(), key) != Ordering::Equal {
+            return None;
+        }
+
+        // Update links and widths
+        for i in 0..skiplist.level {
+            let prev = update[i as usize];
+            let link = &mut (*prev).forward[i as usize];
+            if let Some(ref mut node) = link.node {
+                if skiplist.comparator.compare(node.key.as_ref().unwrap(), key) == Ordering::Equal {
+                    let (next, width) = {
+                        let l = &mut (*x).forward[i as usize];
+                        (l.node.take(), l.width)
+                    };
+
+                    link.node = next;
+                    if width > 0 {
+                        link.width += width - 1;
+                    } else {
+                        link.width = 0;
+                    }
+                    continue;
+                } else {
+                    link.width = link.width.saturating_sub(1);
+                }
+            }
+        }
+
+        skiplist.width = skiplist.width.saturating_sub(1);
+
+        // Remove node and capture value
+        let mut boxed = Box::from_raw(x);
+        let old = boxed.data.take();
+        // Drop the node
+        drop(boxed);
+
+        // Adjust current level if highest levels become empty
+        while skiplist.level > 1
+            && skiplist.head.forward[(skiplist.level - 1) as usize]
+                .node
+                .is_none()
+        {
+            skiplist.level -= 1;
+        }
+
+        old
+    }
 }
-
 
 pub fn random_level<K, V>(skiplist: &SkipList<K, V>) -> u16 {
     let mut lvl = 1;
@@ -279,9 +332,7 @@ pub fn random_level<K, V>(skiplist: &SkipList<K, V>) -> u16 {
     lvl
 }
 
-pub fn display_list<K: Display + Clone, V>(
-    skiplist: &SkipList<K, V>,
-) {
+pub fn display_list<K: Display + Clone, V>(skiplist: &SkipList<K, V>) {
     println!("SkipList ({} elements):", skiplist.width);
     for i in 0..skiplist.width {
         if let Some(k) = key_at(skiplist, i) {
