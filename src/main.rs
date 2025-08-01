@@ -1,10 +1,11 @@
 mod skiplist;
 use skiplist::*;
+use std::cmp::Ordering;
 
 struct StringComparator;
 
 impl Comparator<String> for StringComparator {
-    fn compare(&self, a: &String, b: &String) -> std::cmp::Ordering {
+    fn compare(&self, a: &String, b: &String) -> Ordering {
         a.cmp(b)
     }
 }
@@ -25,58 +26,58 @@ fn main() {
         max_level,
     );
 
-    println!("\n\nEmpty skip list:");
+    println!("\nEmpty skip list");
     display_list(&skiplist);
 
-    // Insert elements
-    println!("\n\nInserting elements:");
+    println!("\nInserting elements");
     for &key in &data {
         insert(&mut skiplist, key.to_string(), Box::new(0));
     }
     display_list(&skiplist);
 
-    // Insert duplicate key
-    println!("\n\nInserting duplicate key 'a':");
-    if let Some(old) = insert(&mut skiplist, "a".to_string(), Box::new(42)) {
-        println!("Replaced old value.");
+    println!("\nInserting an element which is already in the list");
+    if let Some(old) = insert(&mut skiplist, data[0].to_string(), Box::new(0)) {
         drop(old);
     }
     display_list(&skiplist);
 
-    // Remove vowels
-    println!("\n\nRemoving all the vowels:");
+    println!("\nRemoving all the vowels");
     for &key in &["a", "e", "i", "o", "u", "skip_list"] {
         if let Some(val) = remove(&mut skiplist, &key.to_string()) {
-            println!("Removed key '{}'", key);
             drop(val);
         }
     }
     display_list(&skiplist);
 
-    // Search
-    println!("\n\nSearching:");
+    println!("\nSearching for elements");
     println!(
-        "Is 'a' in the skip list? {}",
-        search(&skiplist, &"a".to_string()).is_some()
-    );
-    println!(
-        "Is 'f' in the skip list? {}",
-        search(&skiplist, &"f".to_string()).is_some()
-    );
-
-    // Random Access
-    println!("\n\nRandom Access:");
-    for i in [5, 10, 15, 50] {
-        match key_at(&skiplist, i) {
-            Some(k) => println!("{}th element: {}", i, k),
-            None => println!("{}th element: None", i),
+        "Is `a` in the skip list ? {}",
+        if search(&skiplist, &"a".to_string()).is_some() {
+            1
+        } else {
+            0
         }
+    );
+    println!(
+        "Is `f` in the skip list ? {}",
+        if search(&skiplist, &"f".to_string()).is_some() {
+            1
+        } else {
+            0
+        }
+    );
+
+    println!("\nRandom Access \n");
+    let keys = [5, 10, 15, 50];
+    for idx in keys.iter() {
+        let label = match key_at(&skiplist, *idx) {
+            Some(k) => k,
+            None => "(null)".to_string(),
+        };
+        println!(
+            "The {}th element of the skip list is {}",
+            idx,
+            label
+        );
     }
-
-    // Destroy
-    println!("\n\nDestroying skip list:");
-    destroy(&mut skiplist, Some(|k: &String, _v: &Box<i32>| {
-        println!("Freeing key: {}", k);
-    }));
-
 }
