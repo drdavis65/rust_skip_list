@@ -24,6 +24,8 @@ int main() {
   /* Let's initialize the skip list using jrsl_initialize, we eill use a
    * probability of 0.5. We can use jrsl_max_level to determine the optimum
    * amount of levels knowing the maximum size of our list.*/
+
+  printf("max level: %d", jrsl_max_level(26, P));
   jrsl_initialize(&skip_list, (comparator_t)strcmp, free, P,
                   jrsl_max_level(26, P));
 
