@@ -159,6 +159,8 @@ void jrsl_initialize(skip_list_t *skip_list, comparator_t comparator,
   skip_list->comparator = comparator;
   skip_list->key_destructor = key_destructor;
 
+  srand(42);
+
   jrsl_init_head(skip_list);
 }
 
@@ -229,21 +231,23 @@ void *jrsl_search(skip_list_t *skip_list, void *key) {
   x = skip_list->head;
 
   for (i = skip_list->level; i > 0; --i) {
+    // printf("Searching at level %zu\n", i-1);
     while (x->forward[i - 1].node != NULL &&
            skip_list->comparator(x->forward[i - 1].node->key, key) < 0) {
       x = x->forward[i - 1].node;
     }
-  }
-  x = x->forward[0].node;
-
-  if (x)
-    if (skip_list->comparator(x->key, key) == 0) {
-      return x->data;
+    
+    // PREVIOUS IMPLEMENTATION DID NOT UTILIZE SKIP LIST EFFICIENCY PROPERLY
+    if (x->forward[i - 1].node != NULL && 
+        skip_list->comparator(x->forward[i - 1].node->key, key) == 0) {
+      printf("Key '%s' found at level %zu!\n", (char*)key, i-1);
+      return x->forward[i - 1].node->data;
     }
+  }
 
+  printf("Key '%s' not found\n", (char*)key);
   return NULL;
 }
-
 /* Inserts a new element in the skip list and returns NULL. If an element with
  * that key is already in the list, updates that element and returns the
  * previous data. */
@@ -442,11 +446,11 @@ void *jrsl_remove(skip_list_t *skip_list, void *key) {
 
 static unsigned short jrsl_random_level(skip_list_t *skip_list) {
   /* We don't actually care about initialization */
-  float rnd = rand() / (float)RAND_MAX;
+  float rnd = (float)rand() / (float)RAND_MAX;
   size_t level = 1;
   while (rnd < skip_list->p && level < skip_list->max_level - 1) {
     level++;
-    rnd = rand() / (float)RAND_MAX;
+    rnd = (float)rand() / (float)RAND_MAX;
   }
   return level;
 }
