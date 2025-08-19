@@ -1,6 +1,7 @@
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::cmp::Ordering;
+use libc::{rand,srand};
 
 #[derive(Clone)]
 struct Link<K, D> {
@@ -43,6 +44,10 @@ impl<K, D> SkipList<K, D> {
             });
         }
 
+        unsafe {
+            libc::srand(42);
+        }
+
         let head = Rc::new(RefCell::new(SkipNode {
             forward,
             key: None,
@@ -60,11 +65,13 @@ impl<K, D> SkipList<K, D> {
     }
     
     fn random_level(&self) -> usize {
-        let mut lvl = 1;
-        while rand::random::<f32>() < self.p && lvl < self.max_level as usize {
+        let mut lvl= 1;
+        let mut rnd: f32 = unsafe { libc::rand() as f32 / libc::RAND_MAX as f32 };
+        while rnd < self.p && lvl < self.max_level - 1 {
             lvl += 1;
+            rnd = unsafe { libc::rand() as f32 / libc::RAND_MAX as f32 };
         }
-        lvl
+        lvl as usize
     }
 }
 
@@ -149,17 +156,19 @@ impl<K: Clone, D: Clone> SkipList<K, D> {
         }
 
         // Check if key already exists
-        let current_borrowed = current.borrow();
-        if let Some(next_rc) = current_borrowed.forward[0].node.as_ref() {
-            let mut next_node = next_rc.borrow_mut();
-            if let Some(next_key) = next_node.key.as_ref() {
-                if (self.comparator)(next_key, &key) == Ordering::Equal {
-                    let old_data = next_node.data.replace(data);
-                    return old_data;
+        {
+            let current_borrowed = current.borrow();
+            if let Some(next_rc) = current_borrowed.forward[0].node.as_ref() {
+                let mut next_node = next_rc.borrow_mut();
+                if let Some(next_key) = next_node.key.as_ref() {
+                    if (self.comparator)(next_key, &key) == Ordering::Equal {
+                        let old_data = next_node.data.replace(data);
+                        return old_data;
+                    }
                 }
             }
         }
-        drop(current_borrowed);
+        // drop(current_borrowed);
 
         let node_level = self.random_level();
 
