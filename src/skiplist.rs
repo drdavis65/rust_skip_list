@@ -1,7 +1,7 @@
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::cmp::Ordering;
-use libc::{rand,srand};
+use libc;
 
 #[derive(Clone)]
 struct Link<K, D> {
@@ -94,7 +94,11 @@ impl<K: Clone, D: Clone> SkipList<K, D> {
                                 drop(next_node);
                                 current = next_rc;
                             }
-                            _ => break,
+                            Ordering::Equal => {
+                                // Found the key at this level! Return immediately
+                                return next_node.data.clone();
+                            }
+                            Ordering::Greater => break,
                         }
                     } else {
                         break;
@@ -105,16 +109,6 @@ impl<K: Clone, D: Clone> SkipList<K, D> {
             }
         }
 
-        // Check the next node at level 0
-        let current_borrowed = current.borrow();
-        if let Some(next_rc) = current_borrowed.forward[0].node.as_ref() {
-            let next_node = next_rc.borrow();
-            if let Some(next_key) = next_node.key.as_ref() {
-                if (self.comparator)(next_key, key) == Ordering::Equal {
-                    return next_node.data.clone();
-                }
-            }
-        }
         None
     }
 
@@ -304,14 +298,20 @@ impl<K: Clone, D: Clone> SkipList<K, D> {
         drop(target_borrowed);
 
         // Update the skip list structure
+        // Update the skip list structure
         for i in 0..self.level as usize {
             let mut upd = update[i].borrow_mut();
             if let Some(upd_next) = upd.forward[i].node.as_ref() {
                 if Rc::ptr_eq(upd_next, &target_node) {
-                    upd.forward[i] = target_forward[i].clone();
+                    // Save the original width before overwriting
+                    let original_width = upd.forward[i].width;
                     
+                    // Update node pointer
+                    upd.forward[i].node = target_forward[i].node.clone();
+                    
+                    // Calculate new width using original width
                     if target_forward[i].width > 0 {
-                        upd.forward[i].width += target_forward[i].width - 1;
+                        upd.forward[i].width = original_width + target_forward[i].width - 1;
                     } else {
                         upd.forward[i].width = 0;
                     }
