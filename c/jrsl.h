@@ -231,21 +231,17 @@ void *jrsl_search(skip_list_t *skip_list, void *key) {
   x = skip_list->head;
 
   for (i = skip_list->level; i > 0; --i) {
-    // printf("Searching at level %zu\n", i-1);
     while (x->forward[i - 1].node != NULL &&
            skip_list->comparator(x->forward[i - 1].node->key, key) < 0) {
       x = x->forward[i - 1].node;
     }
     
-    // PREVIOUS IMPLEMENTATION DID NOT UTILIZE SKIP LIST EFFICIENCY PROPERLY
     if (x->forward[i - 1].node != NULL && 
         skip_list->comparator(x->forward[i - 1].node->key, key) == 0) {
-      printf("Key '%s' found at level %zu!\n", (char*)key, i-1);
       return x->forward[i - 1].node->data;
     }
   }
 
-  printf("Key '%s' not found\n", (char*)key);
   return NULL;
 }
 /* Inserts a new element in the skip list and returns NULL. If an element with
@@ -440,7 +436,7 @@ void *jrsl_remove(skip_list_t *skip_list, void *key) {
   while (skip_list->level > 1 &&
          !skip_list->head->forward[skip_list->level - 1].node)
     --skip_list->level;
-
+  skip_list->width--;
   return old;
 }
 
