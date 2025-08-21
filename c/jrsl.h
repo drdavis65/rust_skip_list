@@ -403,7 +403,7 @@ void *jrsl_remove(skip_list_t *skip_list, void *key) {
   x = x->forward[0].node;
 
   /* Could not find the key in the skip list. */
-  if (skip_list->comparator(x->key, key) != 0) {
+  if (x == NULL || skip_list->comparator(x->key, key) != 0) {
     free(update);
     return NULL;
   }
