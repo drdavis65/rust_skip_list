@@ -38,7 +38,7 @@ for opt in "${OPT_LEVELS[@]}"; do
   
   echo "Compiling C with -O$opt"
   pushd c >/dev/null
-  clang -std=c99 -O"$opt" -DNDEBUG -o "../binaries/skip_list_c_O$opt" main.c
+  clang -std=c99 -O"$opt" -DNDEBUG -lm -o "../binaries/skip_list_c_O$opt" main.c
   popd >/dev/null
   echo "✓ C binary: binaries/skip_list_c_O$opt"
   echo
@@ -46,14 +46,14 @@ for opt in "${OPT_LEVELS[@]}"; do
   echo "Compiling Rust VANILLA (O$opt)"
   RUSTC="$VANILLA_RUSTC" RUSTFLAGS="-C opt-level=$opt" \
     cargo build --release --target-dir "target_vanilla_O$opt"
-  cp "target_vanilla_O$opt/release/rust_skip_list" "binaries/skip_list_rust_vanilla_O$opt"
+  cp "target_vanilla_O$opt/release/skip_list_rust" "binaries/skip_list_rust_vanilla_O$opt"
   echo "✓ Vanilla Rust: binaries/skip_list_rust_vanilla_O$opt"
   echo
   
   echo "Compiling Rust CUSTOM (O$opt)"
   RUSTC="$CUSTOM_RUSTC" RUSTFLAGS="-C opt-level=$opt" \
     cargo build --release --target-dir "target_custom_O$opt"
-  cp "target_custom_O$opt/release/rust_skip_list" "binaries/skip_list_rust_custom_O$opt"
+  cp "target_custom_O$opt/release/skip_list_rust" "binaries/skip_list_rust_custom_O$opt"
   echo "✓ Custom Rust: binaries/skip_list_rust_custom_O$opt"
   echo
 done

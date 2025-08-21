@@ -1,5 +1,6 @@
 // bench_skiplist.c - Simplified version using pre-generated data
 #define JRSL_IMPLEMENTATION
+#define _GNU_SOURCE
 #include "jrsl.h"
 #include "data.h"
 
