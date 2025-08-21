@@ -71,12 +71,8 @@ fn main() {
     let mut index_sum: u64 = 0;
     let len_now = sl.len();
     
-    // Use a simple counter for index operations since we don't have pre-generated ranks
-    let idx_ops = N; // Same as the original benchmark
-    for i in 0..idx_ops {
-        if len_now == 0 { break; }
-        let r = i % len_now; // Simple deterministic pattern
-        if let (Some(k), Some(d)) = (sl.key_at(r), sl.data_at(r)) {
+    for i in 0..len_now {
+        if let (Some(k), Some(d)) = (sl.key_at(i), sl.data_at(i)) {
             index_sum = index_sum.wrapping_add(k as u64).wrapping_add(d as u64);
         }
     }
@@ -90,7 +86,7 @@ fn main() {
     println!("  Updates:  {}", UPDATES);
     println!("  Removes:  {} (hits: {}, misses: {})", REMOVES, remove_hits, remove_misses);
     println!("  Searches: {} (hits: {}, misses: {})", SEARCHES, search_hits, search_misses);
-    println!("  Index:    {} (len_now: {}, checksum: {})", idx_ops, len_now, index_sum);
+    println!("  Index:    (final length: {}, checksum: {})", len_now, index_sum);
     println!();
     println!("Total time: {} ms", total_time.as_millis());
     println!("Final skiplist length: {}", sl.len());

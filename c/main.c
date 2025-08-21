@@ -115,14 +115,9 @@ int main(void) {
   uint64_t index_sum = 0; /* consume results so optimizer can't elide */
   size_t len_now = sl.width;
   
-  /* Use a simple counter for index operations since we don't have pre-generated ranks */
-  size_t idx_ops = N; /* Same as the Rust benchmark */
-  for (size_t i = 0; i < idx_ops; ++i) {
-    if (len_now == 0) break;
-    size_t r = i % len_now; /* Simple deterministic pattern */
-    /* It's fine if your key_at/data_at are O(log n). If O(n), this will dominate. */
-    int *k = (int*)jrsl_key_at(&sl, r);
-    char *d = (char*)jrsl_data_at(&sl, r);
+  for (size_t i = 0; i < len_now; ++i) {
+    int *k = (int*)jrsl_key_at(&sl, i);
+    char *d = (char*)jrsl_data_at(&sl, i);
     if (k && d) {
       index_sum += (uint64_t)(*k) + (uint64_t)(unsigned char)(*d);
     }
@@ -137,7 +132,7 @@ int main(void) {
   printf("  Updates:  %d\n", UPDATES);
   printf("  Removes:  %d (hits: %zu, misses: %zu)\n", REMOVES, remove_hits, remove_misses);
   printf("  Searches: %d (hits: %zu, misses: %zu)\n", SEARCHES, search_hits, search_misses);
-  printf("  Index:    %zu (len_now: %zu, checksum: %" PRIu64 ")\n", idx_ops, len_now, index_sum);
+  printf("  Indexes:  (final length: %zu, checksum: %" PRIu64 ")\n", len_now, index_sum);
   printf("\n");
   printf("Total time: %" PRIu64 " ms\n", total_time);
   printf("Final skiplist length: %zu\n", sl.width);
