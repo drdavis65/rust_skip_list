@@ -1,8 +1,8 @@
-** C vs. Rust SkipList Comparison **
+**C vs. Rust SkipList Comparison**
 - Original C implementation from https://github.com/Garfield1002/jrsl
 - Fix in jrsl.h search function (previously was not utilizing Log(n) run time and searching all levels)
 
-** Benchmark **
+**Benchmark**
 - Inserts: 1000000
 - Updates: 500000
 - Removes: 750000 (hits: 393282, misses: 356718)
