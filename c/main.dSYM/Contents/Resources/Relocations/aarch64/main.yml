@@ -1,0 +1,28 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/daltondavis/Desktop/code/rust_implementations/rust_skip_list/c/main'
+relocations:
+  - { offset: 0x26, size: 0x8, addend: 0x0, symName: _jrsl_initialize, symObjAddr: 0x0, symBinAddr: 0x100001BDC, symSize: 0x80 }
+  - { offset: 0x135, size: 0x8, addend: 0x0, symName: _jrsl_initialize, symObjAddr: 0x0, symBinAddr: 0x100001BDC, symSize: 0x80 }
+  - { offset: 0x191, size: 0x8, addend: 0x0, symName: _jrsl_init_head, symObjAddr: 0x80, symBinAddr: 0x100001C5C, symSize: 0xB0 }
+  - { offset: 0x1C3, size: 0x8, addend: 0x0, symName: _jrsl_destroy, symObjAddr: 0x130, symBinAddr: 0x100001D0C, symSize: 0x8C }
+  - { offset: 0x21F, size: 0x8, addend: 0x0, symName: _jrsl_key_at, symObjAddr: 0x1BC, symBinAddr: 0x100001D98, symSize: 0x60 }
+  - { offset: 0x263, size: 0x8, addend: 0x0, symName: _jrsl_node_at, symObjAddr: 0x21C, symBinAddr: 0x100001DF8, symSize: 0x160 }
+  - { offset: 0x2C3, size: 0x8, addend: 0x0, symName: _jrsl_data_at, symObjAddr: 0x37C, symBinAddr: 0x100001F58, symSize: 0x60 }
+  - { offset: 0x307, size: 0x8, addend: 0x0, symName: _jrsl_search, symObjAddr: 0x3DC, symBinAddr: 0x100001FB8, symSize: 0x19C }
+  - { offset: 0x359, size: 0x8, addend: 0x0, symName: _jrsl_insert, symObjAddr: 0x578, symBinAddr: 0x100002154, symSize: 0x664 }
+  - { offset: 0x468, size: 0x8, addend: 0x0, symName: _jrsl_random_level, symObjAddr: 0xBDC, symBinAddr: 0x1000027B8, symSize: 0xB8 }
+  - { offset: 0x4B0, size: 0x8, addend: 0x0, symName: _jrsl_remove, symObjAddr: 0xC94, symBinAddr: 0x100002870, symSize: 0x3E4 }
+  - { offset: 0x525, size: 0x8, addend: 0x0, symName: _jrsl_max_level, symObjAddr: 0x1078, symBinAddr: 0x100002C54, symSize: 0x8C }
+  - { offset: 0x55E, size: 0x8, addend: 0x0, symName: _jrsl_display_list, symObjAddr: 0x1104, symBinAddr: 0x100002CE0, symSize: 0x2CC }
+  - { offset: 0x5F9, size: 0x8, addend: 0x0, symName: _jrsl_center_string, symObjAddr: 0x13D0, symBinAddr: 0x100002FAC, symSize: 0x90 }
+  - { offset: 0x64C, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x1460, symBinAddr: 0x10000303C, symSize: 0x8DC }
+  - { offset: 0xA6B, size: 0x8, addend: 0x0, symName: _rng_init, symObjAddr: 0x1D3C, symBinAddr: 0x100003918, symSize: 0x4C }
+  - { offset: 0xA9D, size: 0x8, addend: 0x0, symName: _rand_char, symObjAddr: 0x1D88, symBinAddr: 0x100003964, symSize: 0x3C }
+  - { offset: 0xAC5, size: 0x8, addend: 0x0, symName: _rng_shuffle, symObjAddr: 0x1DC4, symBinAddr: 0x1000039A0, symSize: 0xC0 }
+  - { offset: 0xB4B, size: 0x8, addend: 0x0, symName: _intcmp, symObjAddr: 0x1E84, symBinAddr: 0x100003A60, symSize: 0x58 }
+  - { offset: 0xB9D, size: 0x8, addend: 0x0, symName: _now_ms, symObjAddr: 0x1EDC, symBinAddr: 0x100003AB8, symSize: 0x44 }
+  - { offset: 0xBC5, size: 0x8, addend: 0x0, symName: _rng_next_usize, symObjAddr: 0x1F20, symBinAddr: 0x100003AFC, symSize: 0x60 }
+  - { offset: 0xBFB, size: 0x8, addend: 0x0, symName: _rng_next_f64, symObjAddr: 0x1F80, symBinAddr: 0x100003B5C, symSize: 0x38 }
+  - { offset: 0xC23, size: 0x8, addend: 0x0, symName: _rng_next_u64, symObjAddr: 0x1FB8, symBinAddr: 0x100003B94, symSize: 0x70 }
+...
