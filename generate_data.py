@@ -125,7 +125,7 @@ def write_rust_file(data):
     """Write data.rs file"""
     print("Writing data.rs...")
     
-    with open('data.rs', 'w') as f:
+    with open('src/data.rs', 'w') as f:
         f.write("// Auto-generated benchmark data\n")
         f.write("// DO NOT EDIT - regenerate with data_generator.py\n\n")
         
@@ -203,7 +203,7 @@ def write_c_file(data):
     """Write data.h file"""
     print("Writing data.h...")
     
-    with open('data.h', 'w') as f:
+    with open('c/data.h', 'w') as f:
         f.write("/* Auto-generated benchmark data */\n")
         f.write("/* DO NOT EDIT - regenerate with data_generator.py */\n\n")
         f.write("#ifndef DATA_H\n#define DATA_H\n\n")
